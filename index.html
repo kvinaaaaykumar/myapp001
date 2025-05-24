@@ -1,20 +1,97 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Company Code Search</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+    }
+
+    #splash {
+      position: fixed;
+      top: 0;
+      left: 0;
       height: 100vh;
+      width: 100vw;
+      background-color: #ffffff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      background-color: #f5f5f5;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 0.6s ease;
+      z-index: 999;
       padding: 20px;
+      text-align: center;
+    }
+
+    #splash.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #splash img {
+      width: 30vw;
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 20px;
+      animation: scaleUp 1s ease-in-out;
+    }
+
+    @keyframes scaleUp {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .spinner {
+      margin-top: 20px;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #ccc;
+      border-top: 3px solid #007BFF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #main-content {
+      display: none;
+      min-height: 100vh;
+      width: 100vw;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    body.loaded #main-content {
+      display: flex;
+    }
+
+    body.loaded #splash {
+      display: none;
     }
 
     .container {
@@ -22,10 +99,14 @@
       background: white;
       padding: 30px 20px;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      max-width: 100%;
-      width: 320px;
-      box-sizing: border-box;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .container h3 {
+      margin-bottom: 15px;
+      font-size: 20px;
     }
 
     #search {
@@ -34,14 +115,46 @@
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #resetBtn {
+      display: none;
+      margin-top: 10px;
+      background-color: #6c757d;
+    }
+
+    .loader {
+      margin: 20px auto 0;
+      width: 30px;
+      height: 30px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007BFF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
     }
 
     #result, #no-result {
-      margin-top: 20px;
+      margin-top: 15px;
       font-size: 16px;
       font-weight: 600;
-      word-wrap: break-word;
     }
 
     #result {
@@ -52,68 +165,45 @@
       color: red;
     }
 
-    #searchBtn, #resetBtn {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 14px;
-      border: none;
-      border-radius: 6px;
-      background-color: #007BFF;
-      color: white;
-      cursor: pointer;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    #searchBtn:hover, #resetBtn:hover {
-      background-color: #0056b3;
-    }
-
-    #resetBtn {
-      display: none;
-    }
-
-    .loader {
-      margin-top: 15px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #007BFF;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin-left: auto;
-      margin-right: auto;
-      display: none;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     @media (max-width: 400px) {
       .container {
         padding: 20px 15px;
-        width: 100%;
       }
 
-      #searchBtn, #resetBtn {
-        font-size: 13px;
-        padding: 10px;
+      .container h3 {
+        font-size: 18px;
+      }
+
+      #search, button {
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h3>Enter Company Code</h3>
-    <input type="text" id="search" placeholder="e.g. S90001">
-    <button id="searchBtn" onclick="handleSearch()">Search</button>
-    <div id="result"></div>
-    <div id="no-result"></div>
-    <div class="loader" id="loader"></div>
-    <button id="resetBtn" onclick="resetSearch()">Search Again</button>
+  <div id="splash">
+    <img src="./logo.jpg" alt="App Logo" />
+    <!-- <div class="spinner"></div> -->
+  </div>
+
+  <div id="main-content">
+    <div class="container">
+      <h3>Enter Company Code</h3>
+      <input type="text" id="search" placeholder="e.g. S90001">
+      <button id="searchBtn" onclick="handleSearch()">Search</button>
+      <div id="result"></div>
+      <div id="no-result"></div>
+      <div class="loader" id="loader"></div>
+      <button id="resetBtn" onclick="resetSearch()">Loading...</button>
+    <div style="margin-top: 25px; text-align: center;">
+  <a href="./privacy.html" target="_blank" style="font-size: 14px; color: #007BFF; text-decoration: none;">
+    Privacy Policy
+  </a>
+</div>
+
+    </div>
+    
   </div>
 
   <script>
@@ -176,6 +266,10 @@
       loader.style.display = 'none';
       resetBtn.style.display = 'none';
     }
+
+    setTimeout(() => {
+      document.body.classList.add('loaded');
+    }, 3000); // Splash duration
   </script>
 
 </body>
