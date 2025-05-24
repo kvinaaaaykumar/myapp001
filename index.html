@@ -178,6 +178,19 @@
         font-size: 14px;
       }
     }
+
+    /* Improved splash screen styling for mobile */
+    @media (max-width: 480px) {
+      #splash {
+        padding: 15px;
+      }
+
+      #splash img {
+        width: 300vw;
+        max-width: 300px;
+        margin-bottom: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -196,14 +209,12 @@
       <div id="no-result"></div>
       <div class="loader" id="loader"></div>
       <button id="resetBtn" onclick="resetSearch()">Loading...</button>
-    <div style="margin-top: 25px; text-align: center;">
-  <a href="./privacy.html" target="_self" style="font-size: 14px; color: #007BFF; text-decoration: none;">
-    Privacy Policy
-  </a>
-</div>
-
+      <div style="margin-top: 25px; text-align: center;">
+        <a href="./privacy.html" target="_self" style="font-size: 14px; color: #007BFF; text-decoration: none;">
+          Privacy Policy
+        </a>
+      </div>
     </div>
-    
   </div>
 
   <script>
